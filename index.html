@@ -1,0 +1,1057 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Saṅkrānti Number — Your Real Birth Number, Calculated Precisely</title>
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+<script src="https://cdn.jsdelivr.net/npm/tz-lookup@6.1.25/tz.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+<style>
+  :root {
+    --bg: #fafbfc;
+    --panel: #ffffff;
+    --panel-alt: #f2f4f7;
+    --border: #e1e5eb;
+    --text: #14181f;
+    --text-muted: #656d7a;
+    --accent: #2952a3;
+    --accent-soft: #e8effa;
+    --success: #1f8a5c;
+    --success-soft: #e6f6ee;
+    --danger: #b3261e;
+    --danger-soft: #fbe9e8;
+    --shadow: rgba(20, 24, 31, 0.06);
+  }
+  @media (prefers-color-scheme: dark) {
+    :root:not([data-theme="light"]) {
+      --bg: #0d1117; --panel: #151b23; --panel-alt: #1c232d; --border: #2a323d;
+      --text: #eef1f5; --text-muted: #9099a8; --accent: #6f9ceb; --accent-soft: #16233b;
+      --success: #4fd18f; --success-soft: #12261d; --danger: #ef6a5a; --danger-soft: #2b1616;
+      --shadow: rgba(0, 0, 0, 0.4);
+    }
+  }
+  :root[data-theme="dark"] {
+    --bg: #0d1117; --panel: #151b23; --panel-alt: #1c232d; --border: #2a323d;
+    --text: #eef1f5; --text-muted: #9099a8; --accent: #6f9ceb; --accent-soft: #16233b;
+    --success: #4fd18f; --success-soft: #12261d; --danger: #ef6a5a; --danger-soft: #2b1616;
+    --shadow: rgba(0, 0, 0, 0.4);
+  }
+
+  * { box-sizing: border-box; }
+  body { margin: 0; background: var(--bg); color: var(--text); font-family: 'Inter', sans-serif; }
+  .wrap { max-width: 52rem; margin: 0 auto; padding: 0 1.25rem; }
+
+  /* --- Header --- */
+  header.site {
+    border-bottom: 1px solid var(--border); background: var(--panel);
+    position: sticky; top: 0; z-index: 40;
+  }
+  .site-header-inner { display: flex; align-items: center; justify-content: space-between; padding: 0.9rem 1.25rem; max-width: 52rem; margin: 0 auto; }
+  .brand { display: flex; align-items: center; gap: 0.5rem; font-weight: 700; font-size: 1.05rem; }
+  .brand .dot { width: 0.55rem; height: 0.55rem; border-radius: 50%; background: var(--accent); }
+  .theme-toggle { display: flex; gap: 0.2rem; }
+  .theme-toggle button {
+    background: none; border: 1px solid var(--border); color: var(--text-muted);
+    border-radius: 6px; padding: 0.3rem 0.5rem; font-size: 0.82rem; cursor: pointer;
+  }
+  .theme-toggle button.active { background: var(--panel-alt); color: var(--text); border-color: var(--accent); }
+
+  /* --- Hero --- */
+  .hero { padding: 3rem 0 2rem; display: grid; grid-template-columns: 1fr 13rem; gap: 2rem; align-items: center; }
+  @media (max-width: 40rem) { .hero { grid-template-columns: 1fr; } .hero-visual { display: none; } }
+  .hero h1 { font-size: clamp(1.7rem, 4vw, 2.3rem); font-weight: 800; line-height: 1.2; margin: 0 0 0.8rem; }
+  .hero p { font-size: 1.05rem; color: var(--text-muted); line-height: 1.6; margin: 0 0 1.3rem; }
+  .hero-cta { display: inline-block; background: var(--accent); color: #fff; font-weight: 600; font-size: 0.95rem; padding: 0.7rem 1.4rem; border-radius: 8px; text-decoration: none; }
+  .hero-visual { height: 11rem; border-radius: 12px; overflow: hidden; background: var(--panel-alt); }
+  .hero-visual canvas { display: block; width: 100%; height: 100%; }
+
+  /* --- How it works --- */
+  .steps-row { display: grid; grid-template-columns: repeat(3, 1fr); gap: 1rem; padding: 0.5rem 0 2.5rem; }
+  @media (max-width: 34rem) { .steps-row { grid-template-columns: 1fr; } }
+  .step-card { background: var(--panel); border: 1px solid var(--border); border-radius: 10px; padding: 1.1rem; }
+  .step-card .num { font-weight: 800; color: var(--accent); font-size: 0.82rem; margin-bottom: 0.4rem; }
+  .step-card h3 { font-size: 0.95rem; margin: 0 0 0.35rem; }
+  .step-card p { font-size: 0.85rem; color: var(--text-muted); margin: 0; line-height: 1.5; }
+
+  /* --- Method banner --- */
+  .method-banner {
+    background: var(--success-soft); border: 1px solid var(--success); border-radius: 10px;
+    padding: 0.9rem 1.1rem; margin-bottom: 1.4rem; font-size: 0.88rem; display: flex; align-items: center; justify-content: space-between; gap: 1rem; flex-wrap: wrap;
+  }
+  .method-banner strong { color: var(--success); }
+  .method-banner button {
+    background: none; border: 1px solid var(--border); color: var(--text); border-radius: 6px;
+    padding: 0.4rem 0.8rem; font-size: 0.82rem; cursor: pointer; font-family: inherit; white-space: nowrap;
+  }
+
+  /* --- Calculator card --- */
+  .calc-card { background: var(--panel); border: 1px solid var(--border); border-radius: 14px; padding: 1.6rem; box-shadow: 0 1px 3px var(--shadow); margin-bottom: 3rem; }
+  .calc-card h2 { font-size: 1.2rem; margin: 0 0 1.1rem; }
+
+  .method-select-wrap { display: none; background: var(--panel-alt); border: 1px solid var(--border); border-radius: 10px; padding: 1rem; margin-bottom: 1.3rem; }
+  .method-select-wrap.open { display: block; }
+  .method-select-wrap label { display: block; font-size: 0.72rem; text-transform: uppercase; letter-spacing: 0.04em; color: var(--text-muted); margin-bottom: 0.4rem; }
+  .method-select-wrap select { width: 100%; padding: 0.5rem 0.6rem; border-radius: 6px; border: 1px solid var(--border); background: var(--panel); color: var(--text); font-size: 0.9rem; font-family: inherit; }
+  #methodDesc { font-size: 0.82rem; color: var(--text-muted); margin-top: 0.6rem; line-height: 1.5; }
+
+  .calc-inputs { display: grid; grid-template-columns: repeat(auto-fit, minmax(9rem, 1fr)); gap: 0.9rem; margin-bottom: 1.2rem; }
+  .calc-field label { display: block; font-size: 0.7rem; text-transform: uppercase; letter-spacing: 0.04em; color: var(--text-muted); margin-bottom: 0.35rem; }
+  .calc-field input, .calc-field select {
+    width: 100%; background: var(--panel-alt); border: 1px solid var(--border); color: var(--text);
+    border-radius: 7px; padding: 0.55rem 0.65rem; font-size: 0.92rem; font-family: inherit;
+  }
+  .calc-field input:focus, .calc-field select:focus { outline: none; border-color: var(--accent); }
+  .calc-field.wide { grid-column: span 2; position: relative; }
+  @media (max-width: 30rem) { .calc-field.wide { grid-column: 1 / -1; } }
+
+  .autocomplete-list {
+    display: none; position: absolute; top: 100%; left: 0; right: 0; margin-top: 3px;
+    background: var(--panel); border: 1px solid var(--border); border-radius: 8px;
+    max-height: 12rem; overflow-y: auto; z-index: 30; box-shadow: 0 6px 16px var(--shadow);
+  }
+  .autocomplete-list.open { display: block; }
+  .autocomplete-item { padding: 0.45rem 0.65rem; font-size: 0.85rem; cursor: pointer; display: flex; justify-content: space-between; gap: 0.5rem; }
+  .autocomplete-item:hover, .autocomplete-item.active { background: var(--panel-alt); }
+  .autocomplete-item .country { color: var(--text-muted); font-size: 0.74rem; white-space: nowrap; }
+  .autocomplete-empty { padding: 0.5rem 0.65rem; font-size: 0.78rem; color: var(--text-muted); }
+
+  #calcBtn {
+    width: 100%; background: var(--accent); color: #fff; border: none; font-weight: 700;
+    font-size: 1rem; padding: 0.75rem; border-radius: 9px; cursor: pointer; font-family: inherit;
+  }
+  #calcBtn:hover { filter: brightness(1.08); }
+  #calcError { display: none; background: var(--danger-soft); color: var(--danger); border: 1px solid var(--danger); padding: 0.6rem 0.9rem; border-radius: 8px; font-size: 0.85rem; margin-bottom: 1rem; }
+
+  #calcResults { display: none; margin-top: 1.6rem; }
+  .result-hero {
+    text-align: center; background: var(--accent-soft); border: 1px solid var(--accent); border-radius: 12px;
+    padding: 1.6rem; margin-bottom: 1.3rem;
+  }
+  .result-hero .lbl { font-size: 0.78rem; text-transform: uppercase; letter-spacing: 0.05em; color: var(--accent); font-weight: 700; margin-bottom: 0.5rem; }
+  .result-hero .val { font-size: 3.2rem; font-weight: 800; line-height: 1; color: var(--text); }
+  .result-hero .sub { font-size: 1rem; color: var(--text-muted); margin-top: 0.5rem; }
+
+  .trace-header { display: flex; align-items: center; justify-content: space-between; font-size: 0.78rem; text-transform: uppercase; letter-spacing: 0.04em; color: var(--text-muted); margin-bottom: 0.5rem; }
+  #copyTraceBtn { background: var(--panel-alt); border: 1px solid var(--border); color: var(--text); border-radius: 6px; padding: 0.35rem 0.75rem; font-size: 0.8rem; cursor: pointer; font-family: inherit; }
+  #copyTraceBtn.copied { background: var(--success); color: #fff; border-color: var(--success); }
+  #stepTrace {
+    font-size: 0.85rem; line-height: 1.8; color: var(--text-muted); background: var(--panel-alt);
+    border-radius: 10px; padding: 1.1rem 1.3rem; white-space: pre-wrap; font-family: 'Inter', sans-serif;
+    margin: 0; max-height: 26rem; overflow-y: auto;
+  }
+  #stepTrace .hdr { color: var(--text); font-weight: 700; display: block; margin: 0.9rem 0 0.3rem; }
+  #stepTrace .hdr:first-child { margin-top: 0; }
+
+  /* --- Reference table --- */
+  details.reference { background: var(--panel); border: 1px solid var(--border); border-radius: 10px; padding: 1rem 1.2rem; margin-bottom: 3rem; }
+  details.reference summary { cursor: pointer; font-weight: 600; font-size: 0.95rem; }
+  .ref-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 0.6rem; margin-top: 1rem; }
+  @media (max-width: 30rem) { .ref-grid { grid-template-columns: repeat(2, 1fr); } }
+  .ref-cell { background: var(--panel-alt); border: 1px solid var(--border); border-radius: 8px; padding: 0.6rem; text-align: center; }
+  .ref-cell .n { font-weight: 800; color: var(--accent); font-size: 1.1rem; }
+  .ref-cell .g { font-size: 0.8rem; margin-top: 0.15rem; }
+  .ref-cell .c { font-size: 0.62rem; color: var(--text-muted); }
+
+  /* --- South Indian chart --- */
+  .chart-card { background: var(--panel); border: 1px solid var(--border); border-radius: 14px; padding: 1.6rem; box-shadow: 0 1px 3px var(--shadow); margin-bottom: 3rem; display: none; }
+  .chart-card h2 { font-size: 1.2rem; margin: 0 0 1.1rem; }
+  .chart-layout { display: grid; grid-template-columns: 1fr 15rem; gap: 1.4rem; }
+  @media (max-width: 40rem) { .chart-layout { grid-template-columns: 1fr; } }
+  .chart-grid-wrap { display: flex; justify-content: center; }
+  .chart-grid {
+    display: grid; grid-template-columns: repeat(4, 1fr); grid-template-rows: repeat(4, 1fr);
+    width: 100%; max-width: 24rem; aspect-ratio: 1; border: 1px solid var(--border); background: var(--panel);
+  }
+  .chart-cell {
+    border: 1px solid var(--border); padding: 0.3rem; display: flex; flex-wrap: wrap;
+    align-content: flex-start; justify-content: center; gap: 0.15rem; position: relative; font-size: 0.72rem;
+  }
+  .chart-cell .rname { position: absolute; bottom: 2px; right: 4px; font-size: 0.56rem; color: var(--text-muted); }
+  .chart-cell .pt { display: flex; flex-direction: column; align-items: center; line-height: 1.05; margin: 1px; }
+  .chart-cell .pt .abbr { font-weight: 700; font-size: 0.76rem; }
+  .chart-cell .pt .deg { font-size: 0.54rem; color: var(--text-muted); }
+  .chart-cell .pt.special .abbr { color: var(--accent); }
+  .chart-center {
+    grid-column: span 2; grid-row: span 2; background: var(--panel-alt); display: flex;
+    align-items: center; justify-content: center; text-align: center; font-weight: 700;
+    color: var(--text-muted); font-size: 0.85rem; line-height: 1.3;
+  }
+  .chart-legend-title { font-size: 0.7rem; text-transform: uppercase; letter-spacing: 0.04em; color: var(--text-muted); margin-bottom: 0.5rem; }
+  .legend-row { display: flex; justify-content: space-between; font-size: 0.8rem; padding: 0.25rem 0; border-bottom: 1px solid var(--border); }
+  .legend-row .lname { color: var(--text-muted); }
+  .legend-row.special .lname { color: var(--accent); font-weight: 600; }
+  .chart-note { font-size: 0.78rem; color: var(--text-muted); line-height: 1.5; margin-top: 0.8rem; }
+
+  /* --- Saura-degree correspondence (result card) --- */
+  .saura-card { background: var(--panel-alt); border: 1px solid var(--border); border-radius: 12px; padding: 1.1rem 1.2rem; margin-bottom: 1.3rem; }
+  .saura-card h3 { font-size: 0.95rem; margin: 0 0 0.25rem; }
+  .saura-card .saura-intro { font-size: 0.8rem; color: var(--text-muted); line-height: 1.5; margin: 0 0 0.9rem; }
+  .saura-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(7.5rem, 1fr)); gap: 0.6rem; }
+  .saura-item { background: var(--panel); border: 1px solid var(--border); border-radius: 8px; padding: 0.6rem 0.7rem; }
+  .saura-item .k { font-size: 0.68rem; color: var(--text-muted); margin-bottom: 0.2rem; }
+  .saura-item .v { font-size: 1rem; font-weight: 700; }
+  .saura-item .s { font-size: 0.72rem; color: var(--text-muted); margin-top: 0.1rem; }
+  .saura-note { font-size: 0.76rem; color: var(--text-muted); line-height: 1.5; margin: 0.8rem 0 0; }
+
+  /* --- Saura-degree reference table --- */
+  .saura-scroll { overflow-x: auto; margin-top: 1rem; -webkit-overflow-scrolling: touch; }
+  table.saura-table { border-collapse: collapse; width: 100%; min-width: 50rem; font-size: 0.82rem; }
+  table.saura-table th, table.saura-table td { border: 1px solid var(--border); padding: 0.4rem 0.55rem; text-align: left; white-space: nowrap; }
+  table.saura-table thead th { background: var(--panel-alt); font-weight: 700; }
+  table.saura-table td.d { text-align: center; color: var(--accent); font-weight: 700; }
+  table.saura-table td.graha { font-weight: 600; }
+  table.saura-table .lord { display: block; font-size: 0.72rem; color: var(--text-muted); }
+  table.saura-table tfoot td, table.saura-table tfoot th { background: var(--panel-alt); }
+  table.saura-table tfoot th { font-weight: 600; }
+  table.saura-table td.hit, table.saura-table th.hit { background: var(--accent-soft); box-shadow: inset 0 0 0 1px var(--accent); }
+  table.saura-table td.d.hit { color: var(--accent); }
+  .saura-legend { font-size: 0.78rem; color: var(--text-muted); line-height: 1.5; margin: 0.8rem 0 0; }
+
+  footer.site { border-top: 1px solid var(--border); padding: 2rem 0; text-align: center; color: var(--text-muted); font-size: 0.82rem; }
+</style>
+</head>
+<body>
+
+<header class="site">
+  <div class="site-header-inner">
+    <div class="brand"><span class="dot"></span> Saṅkrānti Number</div>
+    <div class="theme-toggle">
+      <button data-theme-choice="light" title="Light">☀️</button>
+      <button data-theme-choice="dark" title="Dark">🌙</button>
+      <button data-theme-choice="auto" class="active" title="Match system">🖥️</button>
+    </div>
+  </div>
+</header>
+
+<div class="wrap">
+
+  <section class="hero">
+    <div>
+      <h1>Your real birth number, measured — not estimated.</h1>
+      <p>Most birth-number methods count from a fixed calendar date. This one counts from a real astronomical event — the exact moment the Sun entered your zodiac sign — using precise, continuous time rather than a rough approximation.</p>
+      <a href="#calculator" class="hero-cta">Calculate my number</a>
+    </div>
+    <div class="hero-visual"><canvas id="heroCanvas"></canvas></div>
+  </section>
+
+  <section class="steps-row">
+    <div class="step-card">
+      <div class="num">STEP 1</div>
+      <h3>We find your Saṅkrānti</h3>
+      <p>The exact instant the Sun entered your zodiac sign, computed from real ephemeris data.</p>
+    </div>
+    <div class="step-card">
+      <div class="num">STEP 2</div>
+      <h3>We measure exact elapsed time</h3>
+      <p>The precise, continuous duration between that moment and your birth — no rounding, no assumptions.</p>
+    </div>
+    <div class="step-card">
+      <div class="num">STEP 3</div>
+      <h3>You get your number</h3>
+      <p>Reduced to a single digit, with its ruling planet and the full working shown step by step.</p>
+    </div>
+  </section>
+
+  <section id="calculator">
+    <div class="method-banner">
+      <span>Using the <strong>Continuous Elapsed-Time</strong> method — the most mathematically exact way to calculate this.</span>
+      <button id="changeMethodBtn">Change method</button>
+    </div>
+
+    <div class="calc-card">
+      <h2>Enter your birth details</h2>
+
+      <div class="method-select-wrap" id="methodSelectWrap">
+        <label>Calculation method</label>
+        <select id="methodSelect">
+          <option value="continuous" selected>Continuous elapsed time (Recommended)</option>
+          <option value="calendar">Calendar cutoff (traditional)</option>
+          <option value="checkpoint">Day-by-day checkpoint (traditional)</option>
+        </select>
+        <div id="methodDesc"></div>
+      </div>
+
+      <div id="calcError"></div>
+
+      <div class="calc-inputs">
+        <div class="calc-field wide"><label>Name (optional)</label><input type="text" id="cName" placeholder="e.g. Shankara"></div>
+        <div class="calc-field"><label>Date of birth</label><input type="date" id="cDate" value="1990-01-01"></div>
+        <div class="calc-field"><label>Time of birth</label><input type="time" id="cTime" step="1" value="12:00:00"></div>
+        <div class="calc-field wide">
+          <label>Place of birth</label>
+          <input type="text" id="cPlace" placeholder="Type a city…" autocomplete="off">
+          <div id="cPlaceDropdown" class="autocomplete-list"></div>
+        </div>
+        <div class="calc-field"><label>Timezone (hrs) <span id="cDstNote" style="color:var(--accent);text-transform:none;"></span></label><input type="number" id="cTz" step="0.5" value="5.5"></div>
+        <div class="calc-field"><label>Latitude</label><input type="number" id="cLat" step="any" value="28.6139"></div>
+        <div class="calc-field"><label>Longitude</label><input type="number" id="cLon" step="any" value="77.2090"></div>
+      </div>
+
+      <button id="calcBtn">Calculate my birth number</button>
+
+      <div id="calcResults">
+        <div class="result-hero">
+          <div class="lbl" id="resultMethodLabel">Continuous elapsed-time method</div>
+          <div class="val" id="rResult">—</div>
+          <div class="sub" id="rResultSub"></div>
+        </div>
+
+        <div class="saura-card" id="sauraCard"></div>
+
+        <div class="trace-header">
+          <span>Full step-by-step calculation</span>
+          <button id="copyTraceBtn">📋 Copy</button>
+        </div>
+        <pre id="stepTrace"></pre>
+      </div>
+    </div>
+  </section>
+
+  <div class="chart-card" id="chartCard">
+    <h2>South Indian chart</h2>
+    <div class="chart-layout">
+      <div class="chart-grid-wrap">
+        <div class="chart-grid">
+          <div id="chart-rasi-11" class="chart-cell"></div>
+          <div id="chart-rasi-0" class="chart-cell"></div>
+          <div id="chart-rasi-1" class="chart-cell"></div>
+          <div id="chart-rasi-2" class="chart-cell"></div>
+          <div id="chart-rasi-10" class="chart-cell"></div>
+          <div class="chart-center">D1<br>Rāśi</div>
+          <div id="chart-rasi-3" class="chart-cell"></div>
+          <div id="chart-rasi-9" class="chart-cell"></div>
+          <div id="chart-rasi-4" class="chart-cell"></div>
+          <div id="chart-rasi-8" class="chart-cell"></div>
+          <div id="chart-rasi-7" class="chart-cell"></div>
+          <div id="chart-rasi-6" class="chart-cell"></div>
+          <div id="chart-rasi-5" class="chart-cell"></div>
+        </div>
+      </div>
+      <div>
+        <div class="chart-legend-title">Positions</div>
+        <div id="chartLegend"></div>
+        <div class="chart-note">
+          As = Lagna (Ascendant). HL = Hora Lagna (wealth), one sign per hour from the Sun's sidereal degree at sunrise. GL = Ghati Lagna (power/status), one sign per ghatika (24 min) from the same sunrise point.
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <details class="reference">
+    <summary>Reference: which planet rules which number</summary>
+    <div class="ref-grid" id="refGrid"></div>
+  </details>
+
+  <details class="reference" id="sauraRef">
+    <summary>Reference: Saura degree → Tithi, Graha, Drekkāṇa and Loka</summary>
+    <div class="saura-scroll"><table class="saura-table" id="sauraTable"></table></div>
+    <p class="saura-legend">D is the Saura day: the Sun's degree within the sign (D = 1 covers 0°–1°, D = 30 covers 29°–30°). After you calculate, the row matching your birth is highlighted. The smaller line under each Tithi shows its lord (graha) first, then its presiding deity, both from common Panchāṅga tradition; other texts list different deities.</p>
+  </details>
+
+</div>
+
+<footer class="site">
+  Every calculation above is computed live from real astronomical data — nothing is looked up from a table.<br>
+  Methods 2 and 3 will always differ by exactly one day; Method 3 is provided as the exact, continuous measurement.
+</footer>
+
+<script>
+/* ============================== ASTRO CORE ============================== */
+
+const rashiNames = ['Mesha', 'Vṛṣa', 'Mithuna', 'Karka', 'Siṁha', 'Kanyā', 'Tulā', 'Vṛścika', 'Dhanu', 'Makara', 'Kumbha', 'Mīna'];
+const grahaMap = { 1: 'Sūrya', 2: 'Candra', 3: 'Guru', 4: 'Rāhu', 5: 'Budha', 6: 'Śukra', 7: 'Ketu', 8: 'Śani', 9: 'Maṅgala' };
+const grahaConventional = { 2: true, 3: true, 8: true };
+
+function toLocalWallClock(u, tz) { return new Date(u.getTime() + tz * 3600000); }
+function localMidnight(d) { return new Date(Date.UTC(d.getUTCFullYear(), d.getUTCMonth(), d.getUTCDate())); }
+function wholeDaysBetween(a, b) { return Math.round((b.getTime() - a.getTime()) / 86400000); }
+function digitalRootTrace(n) {
+  let steps = [n], cur = n;
+  while (cur > 9) { cur = String(cur).split('').reduce((a, d) => a + parseInt(d, 10), 0); steps.push(cur); }
+  return { value: cur, trace: steps.join(' → ') };
+}
+function digitalRootDetailed(n) {
+  let cur = n, lines = [];
+  while (cur > 9) {
+    const digits = String(cur).split('');
+    const sum = digits.reduce((a, d) => a + parseInt(d, 10), 0);
+    lines.push(`${cur}  →  ${digits.join(' + ')} = ${sum}`);
+    cur = sum;
+  }
+  if (lines.length === 0) lines.push(`${cur} is already a single digit — no reduction needed`);
+  return { value: cur, lines };
+}
+
+/* All ephemeris math (Sun/planet positions, true Lahiri ayanamsa, the Saṅkranti
+   search, ascendant, sunrise, Hora/Ghati Lagna) is computed server-side by the
+   Swiss Ephemeris-backed Netlify function — see netlify/functions/calculate.py.
+   This one call replaces what used to be several astronomy-engine calls. */
+async function fetchEphemeris(birthDateUTC, lat, lon, tz) {
+  const resp = await fetch('/api/calculate', {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({ birthUtcIso: birthDateUTC.toISOString(), lat, lon, tz })
+  });
+  if (!resp.ok) {
+    const body = await resp.json().catch(() => ({}));
+    throw new Error(body.error || `Calculation service error (${resp.status})`);
+  }
+  return resp.json();
+}
+
+async function computeFull(birthDateUTC, lat, lon, tz) {
+  const api = await fetchEphemeris(birthDateUTC, lat, lon, tz);
+
+  const rasiIndex = api.rasiIndex;
+  const sankrantiDate = new Date(api.sankranti.utc);
+  const sankrantiLocal = toLocalWallClock(sankrantiDate, tz);
+  const birthLocal = toLocalWallClock(birthDateUTC, tz);
+
+  const day1Date = effectiveCalendarDate(sankrantiDate, sankrantiLocal, tz, true);
+  const birthCalDate = effectiveCalendarDate(birthDateUTC, birthLocal, tz, false);
+  const approxCount = wholeDaysBetween(day1Date, birthCalDate) + 1;
+
+  const elapsedDays = api.elapsedDays;
+  const elapsedMs = birthDateUTC.getTime() - sankrantiDate.getTime();
+  const preciseCount = Math.floor(elapsedDays) + 1;
+  const degreeIntoRasi = api.degreeIntoRasi;
+
+  const dailySamples = api.dailySamples.map(s => ({ dayNumber: s.dayNumber, date: new Date(s.dateUtc), degreeIntoRasi: s.degreeIntoRasi }));
+  const crossIdx = dailySamples.findIndex(s => s.degreeIntoRasi >= degreeIntoRasi);
+  const checkpointCrossDay = dailySamples[crossIdx >= 0 ? crossIdx : dailySamples.length - 1].dayNumber;
+
+  return {
+    rasiIndex, sankrantiDate, sankrantiLocal, birthLocal, birthUTC: birthDateUTC, day1Date, birthCalDate,
+    approxCount, approxRoot: digitalRootTrace(approxCount),
+    preciseCount, preciseRoot: digitalRootTrace(preciseCount),
+    checkpointCrossDay, checkpointRoot: digitalRootTrace(checkpointCrossDay),
+    elapsedDays, elapsedMs, degreeIntoRasi, dailySamples,
+    ayanamsa: api.sun.ayanamsa, tropical: api.sun.tropical, sunSid: api.sun.sidereal,
+    sankrantiAyanamsa: api.sankranti.ayanamsa, sankrantiResidual: api.sankranti.residual,
+    chart: api.chart
+  };
+}
+
+const planetAbbr = { Sun: 'Su', Moon: 'Mo', Mars: 'Ma', Mercury: 'Me', Jupiter: 'Ju', Venus: 'Ve', Saturn: 'Sa', Rahu: 'Ra', Ketu: 'Ke' };
+const planetFullName = { Sun: 'Sūrya', Moon: 'Candra', Mars: 'Maṅgala', Mercury: 'Budha', Jupiter: 'Guru', Venus: 'Śukra', Saturn: 'Śani', Rahu: 'Rāhu', Ketu: 'Ketu' };
+
+function renderChart(chart) {
+  if (!chart) { document.getElementById('chartCard').style.display = 'none'; return; }
+  const cellContents = Array.from({ length: 12 }, () => []);
+  const legendRows = [];
+
+  function place(abbr, lon2, isSpecial) {
+    const r = Math.floor(lon2 / 30), deg = lon2 % 30;
+    cellContents[r].push({ abbr, deg, special: isSpecial });
+  }
+  function legend(label, lon2, isSpecial) {
+    const r = Math.floor(lon2 / 30), deg = lon2 % 30;
+    legendRows.push({ label, rasi: rashiNames[r], deg, special: isSpecial });
+  }
+
+  Object.keys(chart.positions).forEach(p => {
+    place(planetAbbr[p], chart.positions[p], false);
+    legend(planetFullName[p], chart.positions[p], false);
+  });
+  place('As', chart.ascendant, true); legend('Lagna (As)', chart.ascendant, true);
+  place('HL', chart.horaLagna, true); legend('Hora Lagna (HL)', chart.horaLagna, true);
+  place('GL', chart.ghatiLagna, true); legend('Ghati Lagna (GL)', chart.ghatiLagna, true);
+
+  for (let r = 0; r < 12; r++) {
+    const cell = document.getElementById('chart-rasi-' + r);
+    if (!cell) continue;
+    cell.innerHTML = cellContents[r].map(it => `
+      <div class="pt${it.special ? ' special' : ''}"><span class="abbr">${it.abbr}</span><span class="deg">${it.deg.toFixed(1)}°</span></div>
+    `).join('') + `<span class="rname">${rashiNames[r]}</span>`;
+  }
+  document.getElementById('chartLegend').innerHTML = legendRows.map(row => `
+    <div class="legend-row${row.special ? ' special' : ''}"><span class="lname">${row.label}</span><span>${row.rasi} ${row.deg.toFixed(2)}°</span></div>
+  `).join('');
+  document.getElementById('chartCard').style.display = 'block';
+}
+
+function cutoffInstant(localWallClockDate, tz) {
+  const y = localWallClockDate.getUTCFullYear(), m = localWallClockDate.getUTCMonth(), d = localWallClockDate.getUTCDate();
+  return new Date(Date.UTC(y, m, d, 12, 0, 0) - tz * 3600000);
+}
+function effectiveCalendarDate(instantUTC, localWallClockDate, tz, isSankranti) {
+  const cutoff = cutoffInstant(localWallClockDate, tz);
+  let dateOnly = localMidnight(localWallClockDate);
+  if (isSankranti) { if (instantUTC.getTime() >= cutoff.getTime()) dateOnly = new Date(dateOnly.getTime() + 86400000); }
+  else { if (instantUTC.getTime() < cutoff.getTime()) dateOnly = new Date(dateOnly.getTime() - 86400000); }
+  return dateOnly;
+}
+
+function fmtDate(d) { const p = n => String(n).padStart(2, '0'); return `${d.getUTCFullYear()}-${p(d.getUTCMonth() + 1)}-${p(d.getUTCDate())}`; }
+function fmtDateTime(d) { const p = n => String(n).padStart(2, '0'); return `${fmtDate(d)} ${p(d.getUTCHours())}:${p(d.getUTCMinutes())}:${p(d.getUTCSeconds())}`; }
+
+/* ============================== HERO 3D VISUAL (decorative) ============================== */
+
+function setupHeroScene() {
+  const canvas = document.getElementById('heroCanvas');
+  const box = canvas.parentElement;
+  const scene = new THREE.Scene();
+  const camera = new THREE.PerspectiveCamera(45, box.clientWidth / box.clientHeight, 0.1, 100);
+  camera.position.set(0, 1.0, 7.5);
+  camera.lookAt(0, 0, 0);
+  const renderer = new THREE.WebGLRenderer({ canvas, antialias: true, alpha: true });
+  renderer.setPixelRatio(Math.min(window.devicePixelRatio || 1, 2));
+  renderer.setSize(box.clientWidth, box.clientHeight);
+  scene.add(new THREE.AmbientLight(0xffffff, 0.7));
+  const pl = new THREE.PointLight(0xffffff, 1.0); pl.position.set(3, 4, 5); scene.add(pl);
+  const group = new THREE.Group(); group.rotation.x = -1.1; scene.add(group);
+  const innerR = 2.2, outerR = 3.0;
+  for (let i = 0; i < 12; i++) {
+    const thetaStart = i * (Math.PI / 6);
+    const geo = new THREE.RingGeometry(innerR, outerR, 20, 1, thetaStart, Math.PI / 6);
+    const mat = new THREE.MeshStandardMaterial({ color: new THREE.Color(`hsl(${i * 30}, 55%, 50%)`), side: THREE.DoubleSide, transparent: true, opacity: 0.5 });
+    group.add(new THREE.Mesh(geo, mat));
+  }
+  const sun = new THREE.Mesh(new THREE.SphereGeometry(0.18, 20, 20), new THREE.MeshStandardMaterial({ color: 0xffcc55, emissive: 0xcc8800, emissiveIntensity: 0.7 }));
+  group.add(sun);
+  let angle = 0;
+  const midR = (innerR + outerR) / 2;
+  (function animate() {
+    requestAnimationFrame(animate);
+    angle += 0.005;
+    sun.position.set(Math.cos(angle) * midR, Math.sin(angle) * midR, 0.1);
+    group.rotation.z += 0.0005;
+    renderer.render(scene, camera);
+  })();
+  window.addEventListener('resize', () => {
+    camera.aspect = box.clientWidth / box.clientHeight;
+    camera.updateProjectionMatrix();
+    renderer.setSize(box.clientWidth, box.clientHeight);
+  });
+}
+
+/* ============================== PLACE SEARCH (curated + live, two sources) ============================== */
+
+const cityDatabase = [
+  ["New Delhi","India",28.6139,77.2090],["Mumbai","India",19.0760,72.8777],
+  ["Kolkata","India",22.5726,88.3639],["Chennai","India",13.0827,80.2707],
+  ["Bengaluru","India",12.9716,77.5946],["Hyderabad","India",17.3850,78.4867],
+  ["Ahmedabad","India",23.0225,72.5714],["Pune","India",18.5204,73.8567],
+  ["Jaipur","India",26.9124,75.7873],["Lucknow","India",26.8467,80.9462],
+  ["Sambalpur","India",21.4669,83.9756],["Bhubaneswar","India",20.2961,85.8245],
+  ["Kochi","India",9.9312,76.2673],["Guwahati","India",26.1445,91.7362],
+  ["Chandigarh","India",30.7333,76.7794],["Patna","India",25.5941,85.1376],
+  ["Tiruppur","India",11.1085,77.3411],
+  ["New York","USA",40.7128,-74.0060],["Los Angeles","USA",34.0522,-118.2437],
+  ["Chicago","USA",41.8781,-87.6298],["London","UK",51.5074,-0.1278],
+  ["Paris","France",48.8566,2.3522],["Berlin","Germany",52.5200,13.4050],
+  ["Dubai","UAE",25.2048,55.2708],["Singapore","Singapore",1.3521,103.8198],
+  ["Tokyo","Japan",35.6762,139.6503],["Sydney","Australia",-33.8688,151.2093],
+  ["Auckland","New Zealand",-36.8485,174.7633],["Toronto","Canada",43.6532,-79.3832],
+  ["Karachi","Pakistan",24.8607,67.0011],["Dhaka","Bangladesh",23.8103,90.4125],
+  ["Kathmandu","Nepal",27.7172,85.3240],["Colombo","Sri Lanka",6.9271,79.8612],
+  ["Maribor","Slovenia",46.5547,15.6459]
+];
+
+/* --- Exact timezone resolution: tz-lookup (offline IANA zone lookup from lat/lon) combined
+   with Intl.DateTimeFormat (the browser's own real, historically-accurate IANA database) gives
+   the EXACT UTC offset for any place and any date — correct DST, correct historical rule changes
+   (e.g. pre-2007 US DST, pre-1983 Yugoslavia having no DST at all), with no hand-coded regional
+   rules and no longitude-based guessing. This replaces the old per-region approximation entirely. */
+function getOffsetMinutes(dateUTC, ianaZone) {
+  const dtf = new Intl.DateTimeFormat('en-US', {
+    timeZone: ianaZone, hourCycle: 'h23',
+    year: 'numeric', month: '2-digit', day: '2-digit',
+    hour: '2-digit', minute: '2-digit', second: '2-digit'
+  });
+  const parts = dtf.formatToParts(dateUTC).reduce((acc, p) => { acc[p.type] = p.value; return acc; }, {});
+  const asUTC = Date.UTC(parts.year, parts.month - 1, parts.day, parts.hour, parts.minute, parts.second);
+  return (asUTC - dateUTC.getTime()) / 60000;
+}
+function resolveExactTimezone(lat, lon, dateUTC) {
+  try {
+    const zone = tzlookup(lat, lon);
+    const offsetHours = getOffsetMinutes(dateUTC, zone) / 60;
+    return { offsetHours, zone, exact: true };
+  } catch (e) {
+    // lat/lon out of bounds or lookup failed — fall back to the longitude estimate as a last resort
+    return { offsetHours: Math.round((lon / 15) * 2) / 2, zone: null, exact: false };
+  }
+}
+
+let selectedPlaceMeta = { lat: 28.6139, lon: 77.2090 };
+let programmaticTz = false;
+function applyDst() {
+  if (!selectedPlaceMeta) return;
+  const dateStr = document.getElementById('cDate').value;
+  const timeStr = document.getElementById('cTime').value || '12:00:00';
+  if (!dateStr) return;
+  const [y, m, d] = dateStr.split('-').map(Number);
+  const [hh, mi, ss] = timeStr.split(':').map(Number);
+  // Resolving DST needs the true UTC instant, but that depends on the offset we're solving for.
+  // Pass 1: treat the local wall-clock numbers as a rough stand-in for UTC to get a first-guess
+  // offset. Pass 2: use that offset to compute the real UTC instant and re-resolve — this
+  // converges immediately except within the literal repeated/skipped hour of a DST transition
+  // itself, an ambiguity inherent to every timezone system, not specific to this method.
+  const wallAsUtc = new Date(Date.UTC(y, m - 1, d, hh || 0, mi || 0, ss || 0));
+  const pass1 = resolveExactTimezone(selectedPlaceMeta.lat, selectedPlaceMeta.lon, wallAsUtc);
+  const realInstant = new Date(wallAsUtc.getTime() - pass1.offsetHours * 3600000);
+  const result = resolveExactTimezone(selectedPlaceMeta.lat, selectedPlaceMeta.lon, realInstant);
+  programmaticTz = true;
+  document.getElementById('cTz').value = result.offsetHours;
+  programmaticTz = false;
+  const note = document.getElementById('cDstNote');
+  note.textContent = result.exact ? `(${result.zone})` : '(estimated — could not resolve exact zone)';
+}
+function wirePlaceSearch() {
+  const input = document.getElementById('cPlace');
+  const dropdown = document.getElementById('cPlaceDropdown');
+  let matches = [], activeIdx = -1, debounceTimer = null, seq = 0;
+  function close() { dropdown.classList.remove('open'); dropdown.innerHTML = ''; activeIdx = -1; }
+  function localMatches(q) {
+    const starts = [], contains = [];
+    cityDatabase.forEach(c => {
+      const n = c[0].toLowerCase();
+      if (n.startsWith(q)) starts.push(c); else if (n.includes(q) || c[1].toLowerCase().includes(q)) contains.push(c);
+    });
+    return starts.concat(contains).slice(0, 6);
+  }
+  function render(loading) {
+    if (matches.length === 0 && !loading) { dropdown.innerHTML = '<div class="autocomplete-empty">No matches — enter Lat/Lng manually</div>'; dropdown.classList.add('open'); return; }
+    let html = matches.map((m, i) => {
+      const isLive = !Array.isArray(m);
+      const name = isLive ? m.name : m[0], country = isLive ? m.country : m[1];
+      return `<div class="autocomplete-item${i===activeIdx?' active':''}" data-idx="${i}"><span>${name}</span><span class="country">${country}</span></div>`;
+    }).join('');
+    if (loading) html += '<div class="autocomplete-empty">Searching…</div>';
+    dropdown.innerHTML = html;
+    dropdown.classList.add('open');
+    dropdown.querySelectorAll('.autocomplete-item').forEach(el => {
+      el.addEventListener('mousedown', e => { e.preventDefault(); select(parseInt(el.dataset.idx, 10)); });
+    });
+  }
+  function select(idx) {
+    const m = matches[idx]; if (!m) return;
+    if (Array.isArray(m)) {
+      input.value = `${m[0]}, ${m[1]}`;
+      document.getElementById('cLat').value = m[2]; document.getElementById('cLon').value = m[3];
+      selectedPlaceMeta = { lat: m[2], lon: m[3] };
+    } else {
+      input.value = `${m.name}, ${m.country}`;
+      document.getElementById('cLat').value = m.lat.toFixed(4); document.getElementById('cLon').value = m.lon.toFixed(4);
+      selectedPlaceMeta = { lat: m.lat, lon: m.lon };
+    }
+    applyDst(); close();
+  }
+  // Two independent free geocoders queried in parallel — if one is slow, blocked, or rate-limited,
+  // the other still comes through. Whichever settles first renders; the other's results merge in
+  // when it arrives, deduplicated by name.
+  async function queryPhoton(q) {
+    const url = 'https://photon.komoot.io/api/?limit=6&q=' + encodeURIComponent(q);
+    const resp = await fetch(url);
+    if (!resp.ok) throw new Error('Photon request failed');
+    const data = await resp.json();
+    return (data.features || []).map(f => {
+      const p = f.properties || {};
+      const name = p.name || p.city || p.street || 'Unknown';
+      const country = p.country || '';
+      const [lon, lat] = f.geometry.coordinates;
+      return { name, country, lat, lon };
+    });
+  }
+  async function queryNominatim(q) {
+    const url = 'https://nominatim.openstreetmap.org/search?format=jsonv2&addressdetails=1&limit=6&q=' + encodeURIComponent(q);
+    const resp = await fetch(url, { headers: { 'Accept': 'application/json' } });
+    if (!resp.ok) throw new Error('Nominatim request failed');
+    const data = await resp.json();
+    return data.map(d => {
+      const a = d.address || {};
+      const name = a.city || a.town || a.village || a.county || d.display_name.split(',')[0];
+      return { name, country: a.country || '', lat: parseFloat(d.lat), lon: parseFloat(d.lon) };
+    });
+  }
+  function mergeLiveResults(newResults) {
+    const seen = new Set(matches.map(m => Array.isArray(m) ? m[0].toLowerCase() : `${m.name}`.toLowerCase()));
+    newResults.forEach(r => {
+      const key = r.name.toLowerCase();
+      if (!seen.has(key)) { seen.add(key); matches.push(r); }
+    });
+    matches = matches.slice(0, 10);
+  }
+  async function liveSearch(q, mySeq) {
+    let anySucceeded = false;
+    const handle = (result) => {
+      if (mySeq !== seq || !result) return;
+      anySucceeded = true;
+      mergeLiveResults(result);
+      render(false);
+    };
+    const p1 = queryPhoton(q).then(handle).catch(() => {});
+    const p2 = queryNominatim(q).then(handle).catch(() => {});
+    await Promise.allSettled([p1, p2]);
+    if (mySeq === seq && !anySucceeded) render(false); // both sources failed (offline, or blocked by a sandboxed preview) — quietly keep the local list
+  }
+  input.addEventListener('input', () => {
+    const q = input.value.trim(); seq++;
+    if (!q) { close(); return; }
+    matches = localMatches(q.toLowerCase()); activeIdx = -1; render(q.length >= 3);
+    if (debounceTimer) clearTimeout(debounceTimer);
+    if (q.length >= 3) { const s = seq; debounceTimer = setTimeout(() => liveSearch(q, s), 400); }
+  });
+  input.addEventListener('keydown', e => {
+    if (!dropdown.classList.contains('open') || !matches.length) return;
+    if (e.key === 'ArrowDown') { e.preventDefault(); activeIdx = Math.min(activeIdx+1, matches.length-1); render(false); }
+    else if (e.key === 'ArrowUp') { e.preventDefault(); activeIdx = Math.max(activeIdx-1, 0); render(false); }
+    else if (e.key === 'Enter') { e.preventDefault(); select(activeIdx >= 0 ? activeIdx : 0); }
+    else if (e.key === 'Escape') close();
+  });
+  input.addEventListener('blur', () => setTimeout(close, 120));
+  document.addEventListener('click', e => { if (!input.contains(e.target) && !dropdown.contains(e.target)) close(); });
+}
+
+/* ============================== METHOD SELECTOR ============================== */
+
+const methodInfo = {
+  continuous: {
+    banner: 'Using the <strong>Continuous Elapsed-Time</strong> method — the most mathematically exact way to calculate this.',
+    label: 'Continuous elapsed-time method',
+    desc: 'Measures the exact, continuous real time between the Saṅkrānti and your birth — no clock-hour convention, no once-a-day sampling gap. Recommended.'
+  },
+  calendar: {
+    banner: 'Using the <strong>Calendar Cutoff</strong> method — a traditional way to calculate this using calendar dates.',
+    label: 'Calendar cutoff method',
+    desc: 'Counts whole calendar dates using a noon cutoff to decide the starting date. Simple to compute by hand, but its answer can shift by a full day depending on which clock-hour convention is used.'
+  },
+  checkpoint: {
+    banner: 'Using the <strong>Day-by-Day Checkpoint</strong> method — a traditional method that checks the Sun\'s position once every 24 hours.',
+    label: 'Day-by-day checkpoint method',
+    desc: 'Samples the Sun\'s real position once every 24 hours from the Saṅkrānti instant. This will always report a number exactly one day higher than the continuous method, because it can only notice a crossing at its next daily check-in.'
+  }
+};
+
+function wireMethodSelector() {
+  document.getElementById('changeMethodBtn').addEventListener('click', () => {
+    document.getElementById('methodSelectWrap').classList.toggle('open');
+  });
+  const select = document.getElementById('methodSelect');
+  function updateBannerAndDesc() {
+    const info = methodInfo[select.value];
+    document.querySelector('.method-banner span').innerHTML = info.banner;
+    document.getElementById('methodDesc').textContent = info.desc;
+  }
+  select.addEventListener('change', () => { updateBannerAndDesc(); if (lastComputed) renderResult(); });
+  updateBannerAndDesc();
+}
+
+/* ============================== CALCULATION + RENDERING ============================== */
+
+let lastComputed = null;
+let lastReportText = '';
+
+function renderResult() {
+  const res = lastComputed;
+  const method = document.getElementById('methodSelect').value;
+  const name = document.getElementById('cName').value.trim() || 'This chart';
+  const tz = parseFloat(document.getElementById('cTz').value);
+  const lat = parseFloat(document.getElementById('cLat').value);
+  const lon = parseFloat(document.getElementById('cLon').value);
+  const birthLocalDisplay = res.birthLocal;
+
+  let count, root, detailedRoot, methodTraceHtml, methodTraceText;
+
+  if (method === 'continuous') {
+    count = res.preciseCount; root = res.preciseRoot; detailedRoot = digitalRootDetailed(res.preciseCount);
+    methodTraceHtml =
+`<span class="hdr">Step 3 — Continuous elapsed-time calculation</span>
+Exact time between the Saṅkrānti and the birth = ${res.elapsedDays.toFixed(4)} days
+
+Day number = ⌊${res.elapsedDays.toFixed(2)}⌋ + 1 = ${Math.floor(res.elapsedDays)} + 1 = ${res.preciseCount}`;
+    methodTraceText =
+`STEP 3 — Continuous elapsed-time calculation
+Exact time elapsed = ${res.elapsedDays.toFixed(4)} days
+Day number = floor(${res.elapsedDays.toFixed(2)}) + 1 = ${res.preciseCount}`;
+  } else if (method === 'calendar') {
+    count = res.approxCount; root = res.approxRoot; detailedRoot = digitalRootDetailed(res.approxCount);
+    const sankH = res.sankrantiLocal.getUTCHours(), sankM = res.sankrantiLocal.getUTCMinutes();
+    const birthH = birthLocalDisplay.getUTCHours(), birthM = birthLocalDisplay.getUTCMinutes();
+    methodTraceHtml =
+`<span class="hdr">Step 3 — Calendar cutoff calculation</span>
+The Saṅkrānti happened at ${String(sankH).padStart(2,'0')}:${String(sankM).padStart(2,'0')} local time — ${sankH >= 12 ? 'after noon, so Day 1 is the ' : 'before noon, so Day 1 is that '}next day: <b>${fmtDate(res.day1Date)}</b>
+The birth happened at ${String(birthH).padStart(2,'0')}:${String(birthM).padStart(2,'0')} — ${birthH >= 12 ? 'after noon, so that date counts fully' : 'before noon, so the count stops one day earlier'}: <b>${fmtDate(res.birthCalDate)}</b>
+
+Counting the days from ${fmtDate(res.day1Date)} to ${fmtDate(res.birthCalDate)}: <b>${res.approxCount} days</b>`;
+    methodTraceText =
+`STEP 3 — Calendar cutoff calculation
+Day 1 = ${fmtDate(res.day1Date)}, birth date used = ${fmtDate(res.birthCalDate)}
+Count = ${res.approxCount} days`;
+  } else {
+    count = res.checkpointCrossDay; root = res.checkpointRoot; detailedRoot = digitalRootDetailed(res.checkpointCrossDay);
+    const cs = res.dailySamples[res.checkpointCrossDay - 1];
+    const ps = res.dailySamples[res.checkpointCrossDay - 2];
+    methodTraceHtml =
+`<span class="hdr">Step 3 — Day-by-day checkpoint calculation</span>
+Checking the Sun's position once a day from the Saṅkrānti:
+  Day ${ps ? ps.dayNumber : '—'}: still short of your birth degree
+  Day ${cs.dayNumber}: has now passed it — this is the day counted
+
+Count = <b>day ${res.checkpointCrossDay}</b> (this method is always exactly 1 day higher than the continuous method above, since it only checks once every 24 hours)`;
+    methodTraceText =
+`STEP 3 — Day-by-day checkpoint calculation
+Day ${ps ? ps.dayNumber : '—'}: still short of target
+Day ${cs.dayNumber}: has passed it -> counted
+Count = ${res.checkpointCrossDay} days (always 1 more than the continuous method)`;
+  }
+
+  document.getElementById('resultMethodLabel').textContent = methodInfo[method].label;
+  document.getElementById('rResult').textContent = count;
+  document.getElementById('rResultSub').textContent = `${root.trace} · ruled by ${grahaMap[root.value]}${grahaConventional[root.value] ? ' (standard convention)' : ''}`;
+
+  const reductionHtml = detailedRoot.lines.join('\n');
+  const reductionText = detailedRoot.lines.join('\n');
+
+  const sauraD = sauraDayFromDegree(res.degreeIntoRasi);
+  const sr = sauraRow(sauraD);
+
+  document.getElementById('stepTrace').innerHTML =
+`<span class="hdr">Step 1 — Your birth details</span>
+${name} — ${fmtDateTime(birthLocalDisplay)}  (UTC${tz >= 0 ? '+' : ''}${tz}), lat ${lat}, lon ${lon}
+
+At this moment, the Sun was in <b>${rashiNames[res.rasiIndex]}</b>, ${res.degreeIntoRasi.toFixed(2)}° into the sign.
+
+<span class="hdr">Step 2 — Finding the Saṅkrānti</span>
+The Sun entered ${rashiNames[res.rasiIndex]} on <b>${fmtDateTime(res.sankrantiLocal)}</b> (local time) — that's the starting point every method below counts from.
+
+${methodTraceHtml}
+
+<span class="hdr">Step 4 — Reduce to a single digit</span>
+${reductionHtml}
+
+<span class="hdr">Step 5 — Saura-degree lookup</span>
+Sun's degree in the sign: ${res.degreeIntoRasi.toFixed(2)}°  →  Saura day <b>${sauraD}</b> (${sr.degRange})
+Tithi: <b>${sr.tithi}</b>
+Tithi lord (graha): <b>${sr.tithiGraha}</b>${sr.tithiGrahaSanskrit !== sr.tithiGraha ? ' (' + sr.tithiGrahaSanskrit + ')' : ''}  ·  Tithi deity: <b>${sr.tithiLord}</b>
+Graha: <b>${sr.graha}</b>${sr.grahaSanskrit !== sr.graha ? ' (' + sr.grahaSanskrit + ')' : ''}
+Drekkāṇa: <b>${sr.drekkana}</b> (${sr.drekRange})  ·  Loka: <b>${sr.loka}</b>
+
+<span class="hdr">Result</span>
+Birth number: <b>${count} → ${root.value}</b>
+Ruling graha: <b>${grahaMap[root.value]}</b>${grahaConventional[root.value] ? ' (standard convention)' : ''}`;
+
+  lastReportText =
+`SAṄKRĀNTI BIRTH NUMBER
+${name}
+Method: ${methodInfo[method].label}
+
+Birth: ${fmtDateTime(birthLocalDisplay)} (UTC${tz >= 0 ? '+' : ''}${tz}), lat ${lat}, lon ${lon}
+Sun's rasi at birth: ${rashiNames[res.rasiIndex]}, ${res.degreeIntoRasi.toFixed(2)} deg into the sign
+Sankranti: ${fmtDateTime(res.sankrantiLocal)} (local)
+
+${methodTraceText}
+
+STEP 4 — Reduce to a single digit
+${reductionText}
+
+STEP 5 — Saura-degree lookup
+Sun's degree in sign: ${res.degreeIntoRasi.toFixed(2)} deg -> Saura day ${sauraD} (${sr.degRange})
+Tithi: ${sr.tithi}
+Tithi lord (graha): ${sr.tithiGraha}
+Tithi deity: ${sr.tithiLord}
+Graha: ${sr.graha}
+Drekkana: ${sr.drekkana} (${sr.drekRange}), Loka: ${sr.loka}
+
+RESULT: birth number ${count} -> ${root.value}, ruled by ${grahaMap[root.value]}`;
+
+  renderSauraCard(res, count);
+  document.getElementById('calcResults').style.display = 'block';
+}
+
+async function runCalculator() {
+  const errBox = document.getElementById('calcError');
+  const btn = document.getElementById('calcBtn');
+  errBox.style.display = 'none';
+  const originalLabel = btn.textContent;
+  try {
+    const dateStr = document.getElementById('cDate').value;
+    const timeStr = document.getElementById('cTime').value;
+    const tz = parseFloat(document.getElementById('cTz').value);
+    const lat = parseFloat(document.getElementById('cLat').value);
+    const lon = parseFloat(document.getElementById('cLon').value);
+    if (!dateStr || !timeStr || isNaN(tz) || isNaN(lat) || isNaN(lon)) throw new Error('Please fill out every field.');
+    const [y, m, d] = dateStr.split('-').map(Number);
+    const [hh, mi, ss] = timeStr.split(':').map(Number);
+    let dateObj = new Date(Date.UTC(y, m - 1, d, hh, mi, ss || 0));
+    dateObj = new Date(dateObj.getTime() - tz * 3600000);
+
+    btn.disabled = true;
+    btn.textContent = 'Calculating…';
+    lastComputed = await computeFull(dateObj, lat, lon, tz);
+    renderResult();
+    renderChart(lastComputed.chart);
+  } catch (err) {
+    errBox.textContent = err.message;
+    errBox.style.display = 'block';
+  } finally {
+    btn.disabled = false;
+    btn.textContent = originalLabel;
+  }
+}
+
+function wireCopyButton() {
+  document.getElementById('copyTraceBtn').addEventListener('click', () => {
+    const btn = document.getElementById('copyTraceBtn');
+    const finish = () => {
+      const old = btn.textContent;
+      btn.textContent = '✓ Copied';
+      btn.classList.add('copied');
+      setTimeout(() => { btn.textContent = old; btn.classList.remove('copied'); }, 1800);
+    };
+    if (navigator.clipboard && navigator.clipboard.writeText) {
+      navigator.clipboard.writeText(lastReportText).then(finish).catch(() => fallbackCopy(finish));
+    } else { fallbackCopy(finish); }
+  });
+}
+function fallbackCopy(done) {
+  const ta = document.createElement('textarea');
+  ta.value = lastReportText;
+  document.body.appendChild(ta);
+  ta.select();
+  try { document.execCommand('copy'); done(); } catch (e) { /* no-op */ }
+  document.body.removeChild(ta);
+}
+
+/* ============================== SAURA DEGREE TABLE ============================== */
+/* Each degree of the Sun's travel through a sign is one "Saura day" (D = 1…30). D maps to:
+   - a Graha slot, cycling through 10 entries (the 10th slot is Lagna)
+   - a Tithi (Pratipāda … Pūrṇimā for D = 1–15, then Pratipāda … Caturdaśī for D = 16–29; D = 30 is Amāvāsya)
+   - a Drekkāṇa (1st / 2nd / 3rd decan of the sign) and its Loka (Bhū / Bhuva / Svarga) */
+const sauraGrahaCycle = ['Sun', 'Moon', 'Jupiter', 'Rāhu', 'Mercury', 'Venus', 'Ketu', 'Saturn', 'Mars', 'Lagna'];
+const sauraGrahaSanskrit = { Sun: 'Sūrya', Moon: 'Candra', Jupiter: 'Guru', 'Rāhu': 'Rāhu', Mercury: 'Budha', Venus: 'Śukra', Ketu: 'Ketu', Saturn: 'Śani', Mars: 'Maṅgala', Lagna: 'Lagna' };
+const sauraTithis = ['Pratipāda', 'Dvitīyā', 'Tritīyā', 'Caturthī', 'Pañcamī', 'Ṣaṣṭi', 'Saptamī', 'Aṣṭamī', 'Navamī', 'Daśamī', 'Ekādaśī', 'Dvādaśī', 'Trayodaśī', 'Caturdaśī', 'Pūrṇimā'];
+/* Tithi lords (presiding deities), the widely used Panchāṅga list. Krishna-pakṣa tithis share the
+   lord of the same-numbered tithi; Pūrṇimā = Candra, Amāvāsya = Pitṛs. Other texts (e.g. the Nārada
+   Purāṇa) give different lists, so this is one tradition, not the only one. */
+const sauraTithiLords = ['Agni', 'Brahmā', 'Gaurī', 'Gaṇeśa', 'Nāga (Sarpa)', 'Kārttikeya', 'Sūrya', 'Śiva (Rudra)', 'Durgā', 'Yama (Kāla)', 'Viśvedevas', 'Viṣṇu', 'Kāma', 'Śiva', 'Candra'];
+/* Tithi lords (graha): the eight grahas repeat in order Sun, Moon, Mars, Mercury, Jupiter, Venus,
+   Saturn, Rāhu across Pratipāda … Pūrṇimā (Pūrṇimā = Saturn), and Amāvāsya = Rāhu. As with the deities,
+   the Kṛṣṇa-pakṣa tithis take the lord of the same-named tithi. */
+const sauraTithiGrahas = ['Sun', 'Moon', 'Mars', 'Mercury', 'Jupiter', 'Venus', 'Saturn', 'Rāhu', 'Sun', 'Moon', 'Mars', 'Mercury', 'Jupiter', 'Venus', 'Saturn'];
+const sauraDrekkanas = [
+  { n: '1st', range: '0°–10°', loka: 'Bhū' },
+  { n: '2nd', range: '10°–20°', loka: 'Bhuva' },
+  { n: '3rd', range: '20°–30°', loka: 'Svarga' }
+];
+
+function sauraRow(D) {
+  const graha = sauraGrahaCycle[(D - 1) % 10];
+  const tithi = D === 30 ? 'Amāvāsya' : sauraTithis[(D - 1) % 15];
+  const tithiLord = D === 30 ? 'Pitṛs' : sauraTithiLords[(D - 1) % 15];
+  const tithiGraha = D === 30 ? 'Rāhu' : sauraTithiGrahas[(D - 1) % 15];
+  const drekIdx = Math.floor((D - 1) / 10);
+  return {
+    d: D, graha, grahaSanskrit: sauraGrahaSanskrit[graha], tithi, tithiLord, tithiGraha, tithiGrahaSanskrit: sauraGrahaSanskrit[tithiGraha],
+    from: D - 1, to: D, degRange: `${D - 1}°–${D}°`,
+    drekIdx, drekkana: sauraDrekkanas[drekIdx].n, drekRange: sauraDrekkanas[drekIdx].range, loka: sauraDrekkanas[drekIdx].loka
+  };
+}
+function sauraDayFromDegree(degreeIntoRasi) {
+  return Math.min(30, Math.max(1, Math.floor(degreeIntoRasi) + 1));
+}
+
+function buildSauraTable() {
+  let html = '<thead><tr><th>Graha</th>' + '<th>D</th><th>Saura</th><th>Tithi</th>'.repeat(3) + '</tr></thead><tbody>';
+  for (let r = 0; r < 10; r++) {
+    html += `<tr><td class="graha" data-grow="${r}">${sauraGrahaCycle[r]}</td>`;
+    for (let c = 0; c < 3; c++) {
+      const row = sauraRow(r + 1 + c * 10);
+      html += `<td class="d" data-d="${row.d}">${row.d}</td><td data-d="${row.d}">${row.degRange}</td><td data-d="${row.d}">${row.tithi}<span class="lord">${row.tithiGraha} · ${row.tithiLord}</span></td>`;
+    }
+    html += '</tr>';
+  }
+  html += '</tbody><tfoot>';
+  const foot = (label, cellFn) => {
+    let h = `<tr><th>${label}</th>`;
+    for (let c = 0; c < 3; c++) h += `<td></td><td data-drek="${c}">${cellFn(sauraDrekkanas[c])}</td><td></td>`;
+    return h + '</tr>';
+  };
+  html += foot('', d => d.range);
+  html += foot('Drekkāṇa', d => d.n);
+  html += foot('Loka', d => d.loka);
+  html += '</tfoot>';
+  document.getElementById('sauraTable').innerHTML = html;
+}
+function highlightSauraRow(D) {
+  const table = document.getElementById('sauraTable');
+  table.querySelectorAll('.hit').forEach(el => el.classList.remove('hit'));
+  const row = sauraRow(D);
+  table.querySelectorAll(`[data-d="${D}"]`).forEach(el => el.classList.add('hit'));
+  table.querySelectorAll(`[data-grow="${(D - 1) % 10}"]`).forEach(el => el.classList.add('hit'));
+  table.querySelectorAll(`[data-drek="${row.drekIdx}"]`).forEach(el => el.classList.add('hit'));
+}
+function renderSauraCard(res, count) {
+  const D = sauraDayFromDegree(res.degreeIntoRasi);
+  const row = sauraRow(D);
+  let note = `Three different grahas can appear here: the Saura-day Graha slot from the table, the graha that lords the Tithi, and the ruling graha of your reduced birth number above. They are separate and often differ.`;
+  if (count !== D) {
+    note = `Your day count under the selected method is ${count}, but this table is keyed by the Sun's actual degree, so it uses row ${D}. The two can differ because the Sun does not move exactly 1° per day. ` + note;
+  }
+  document.getElementById('sauraCard').innerHTML = `
+    <h3>Saura-degree correspondence</h3>
+    <p class="saura-intro">At birth the Sun stood ${res.degreeIntoRasi.toFixed(2)}° into ${rashiNames[res.rasiIndex]}, which falls in Saura day ${D} (${row.degRange}).</p>
+    <div class="saura-grid">
+      <div class="saura-item"><div class="k">Saura day</div><div class="v">${D}</div><div class="s">${row.degRange}</div></div>
+      <div class="saura-item"><div class="k">Tithi</div><div class="v">${row.tithi}</div></div>
+      <div class="saura-item"><div class="k">Tithi lord (graha)</div><div class="v">${row.tithiGraha}</div><div class="s">${row.tithiGrahaSanskrit !== row.tithiGraha ? row.tithiGrahaSanskrit : ''}</div></div>
+      <div class="saura-item"><div class="k">Tithi deity</div><div class="v">${row.tithiLord}</div></div>
+      <div class="saura-item"><div class="k">Graha</div><div class="v">${row.graha}</div><div class="s">${row.grahaSanskrit !== row.graha ? row.grahaSanskrit : ''}</div></div>
+      <div class="saura-item"><div class="k">Drekkāṇa</div><div class="v">${row.drekkana}</div><div class="s">${row.drekRange}</div></div>
+      <div class="saura-item"><div class="k">Loka</div><div class="v">${row.loka}</div></div>
+    </div>
+    <p class="saura-note">${note}</p>`;
+  highlightSauraRow(D);
+}
+
+/* ============================== REFERENCE TABLE ============================== */
+
+function buildRefGrid() {
+  let html = '';
+  for (let n = 1; n <= 9; n++) {
+    html += `<div class="ref-cell"><div class="n">${n}</div><div class="g">${grahaMap[n]}</div>${grahaConventional[n] ? '<div class="c">standard convention</div>' : ''}</div>`;
+  }
+  document.getElementById('refGrid').innerHTML = html;
+}
+
+/* ============================== THEME TOGGLE ============================== */
+
+function applyTheme(choice) {
+  if (choice === 'light') document.documentElement.setAttribute('data-theme', 'light');
+  else if (choice === 'dark') document.documentElement.setAttribute('data-theme', 'dark');
+  else document.documentElement.removeAttribute('data-theme');
+  document.querySelectorAll('.theme-toggle button').forEach(b => b.classList.toggle('active', b.dataset.themeChoice === choice));
+  try { localStorage.setItem('sankranti-theme', choice); } catch (e) { /* non-fatal */ }
+}
+function wireThemeToggle() {
+  document.querySelectorAll('.theme-toggle button').forEach(b => b.addEventListener('click', () => applyTheme(b.dataset.themeChoice)));
+  let saved = 'auto';
+  try { saved = localStorage.getItem('sankranti-theme') || 'auto'; } catch (e) { /* non-fatal */ }
+  applyTheme(saved);
+}
+
+/* ============================== INIT ============================== */
+
+window.addEventListener('load', () => {
+  setupHeroScene();
+  wirePlaceSearch();
+  wireMethodSelector();
+  wireCopyButton();
+  wireThemeToggle();
+  buildRefGrid();
+  buildSauraTable();
+  document.getElementById('calcBtn').addEventListener('click', runCalculator);
+  document.getElementById('cDate').addEventListener('change', applyDst);
+  document.getElementById('cTime').addEventListener('change', applyDst);
+  document.getElementById('cTz').addEventListener('input', () => {
+    if (programmaticTz) return;
+    selectedPlaceMeta = null;
+    document.getElementById('cDstNote').textContent = '';
+  });
+});
+</script>
+</body>
+</html>
